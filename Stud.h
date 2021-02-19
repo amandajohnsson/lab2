@@ -53,6 +53,7 @@ void tolayer5(int AorB, char datasent[20]);
 //av det simulerade applikationslagret samt nätverkslagret
 
 int get_checksum(struct pkt packet);
+
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message);
 
