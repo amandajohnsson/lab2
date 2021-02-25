@@ -2,6 +2,8 @@
 
 #include "Stud.h"
 
+const float expected_rtt = 15.0;
+
 int checksumming(struct pkt packet)
 {
     int checksum = 0;
@@ -12,6 +14,11 @@ int checksumming(struct pkt packet)
     checksum += packet.seqnum + packet.acknum;
     return checksum;
 }
+struct sender
+{
+    int seq;
+    struct last_packet;
+} A;
 
 // Function to send back acknowledgements
 void send_ack(int AorB, int ack)
@@ -24,6 +31,9 @@ void send_ack(int AorB, int ack)
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
+    struct pkt packet;
+
+    memcpy(packet.payload, message.data, sizeof(message.data));
 }
 
 void B_output(struct msg message) /* need be completed only for extra credit */
