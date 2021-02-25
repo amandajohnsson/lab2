@@ -37,11 +37,12 @@ void A_output(struct msg message)
     struct pkt packet;
     memcpy(packet.payload, message.data, sizeof(message.data));
     packet.seqnum = seq;
+    packet.acknum = seq;
     packet.checksum = checksumming(&packet);
     last_packet = packet;
     tolayer3(0, packet);
     starttimer(0, expected_rtt);
-    seq++;
+    seq = 1 - seq;
 }
 
 void B_output(struct msg message) /* need be completed only for extra credit */
@@ -75,7 +76,16 @@ void B_input(struct pkt packet)
     {
         printf("Packet is corrupted\n");
     }
-    b_seq++;
+    else if (packet.seqnum != b_seq)
+    {
+        printf("Packet is corrupted\n");
+    }
+    else
+    {
+        tolayer5(1, packet.payload);
+        tolayer3(1, packet);
+        b_seq = 1 - b_seq;
+    }
 }
 
 /* called when B's timer goes off */
