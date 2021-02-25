@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /* ******************************************************************
  ALTERNATING BIT AND GO-BACK-N NETWORK EMULATOR: VERSION 1.1  J.F.Kurose
@@ -52,7 +53,7 @@ void tolayer5(int AorB, char datasent[20]);
 //Dessa funktioner ska implementeras av studenterna i Stud.c och anropas
 //av det simulerade applikationslagret samt nätverkslagret
 
-int get_checksum(struct pkt packet);
+int checksumming(struct pkt packet);
 
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message);

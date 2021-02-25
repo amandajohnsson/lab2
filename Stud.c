@@ -3,6 +3,9 @@
 #include "Stud.h"
 
 const float expected_rtt = 15.0;
+struct pkt last_packet;
+int seq = 0;
+int b_seq = 0;
 
 int checksumming(struct pkt packet)
 {
@@ -14,11 +17,11 @@ int checksumming(struct pkt packet)
     checksum += packet.seqnum + packet.acknum;
     return checksum;
 }
-struct sender
+/*struct sender
 {
     int seq;
-    struct last_packet;
-} A;
+    struct pkt last_packet;
+} A;*/
 
 // Function to send back acknowledgements
 void send_ack(int AorB, int ack)
@@ -32,8 +35,13 @@ void send_ack(int AorB, int ack)
 void A_output(struct msg message)
 {
     struct pkt packet;
-
     memcpy(packet.payload, message.data, sizeof(message.data));
+    packet.seqnum = seq;
+    packet.checksum = checksumming(&packet);
+    last_packet = packet;
+    tolayer3(0, packet);
+    starttimer(0, expected_rtt);
+    seq++;
 }
 
 void B_output(struct msg message) /* need be completed only for extra credit */
@@ -49,6 +57,8 @@ void A_input(struct pkt packet)
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
+    tolayer3(0, last_packet);
+    starttimer(0, expected_rtt);
 }
 
 /* the following routine will be called once (only) before any other */
@@ -65,6 +75,7 @@ void B_input(struct pkt packet)
     {
         printf("Packet is corrupted\n");
     }
+    b_seq++;
 }
 
 /* called when B's timer goes off */
