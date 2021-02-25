@@ -28,7 +28,7 @@ void send_ack(int AorB, int ack)
 {
     struct pkt packet;
     packet.acknum = ack;
-    packet.checksum = checksumming(&packet);
+    packet.checksum = checksumming(packet);
     tolayer3(AorB, packet);
 }
 /* called from layer 5, passed the data to be sent to other side */
@@ -38,7 +38,7 @@ void A_output(struct msg message)
     memcpy(packet.payload, message.data, sizeof(message.data));
     packet.seqnum = seq;
     packet.acknum = seq;
-    packet.checksum = checksumming(&packet);
+    packet.checksum = checksumming(packet);
     last_packet = packet;
     tolayer3(0, packet);
     starttimer(0, expected_rtt);
