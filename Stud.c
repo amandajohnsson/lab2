@@ -2,6 +2,7 @@
 
 #include "Stud.h"
 
+bool message_exist=false;
 const float expected_rtt = 15.0;
 struct pkt last_packet;
 int seq = 0;
@@ -34,12 +35,18 @@ void send_ack(int AorB, int ack)
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
+
+  if(message_exist){
+    return;
+  }
+
     struct pkt packet;
     memcpy(packet.payload, message.data, sizeof(message.data));
     packet.seqnum = seq;
     packet.acknum = seq;
     packet.checksum = checksumming(packet);
     last_packet = packet;
+    message_exist = true;
     tolayer3(0, packet);
     starttimer(0, expected_rtt);
     seq = 1 - seq;
@@ -53,11 +60,30 @@ void B_output(struct msg message) /* need be completed only for extra credit */
 /* called from layer 3, when a packet arrives for layer 4 */
 void A_input(struct pkt packet)
 {
+
+  if (!message_exist) {
+    return;
+  }
+
+  if (packet.checksum != checksumming(packet))
+    {
+        printf("Packet korrupterat \n");
+        return;
+    }
+  if(packet.acknum == last_packet.seqnum){
+    printf("Paketen stämmer överens, inga problem\n");
+    message_exist = false;
+    stoptimer(0);
+
+  }
 }
+
 
 /* called when A's timer goes off */
 void A_timerinterrupt()
 {
+
+
     tolayer3(0, last_packet);
     starttimer(0, expected_rtt);
 }
@@ -74,11 +100,11 @@ void B_input(struct pkt packet)
 {
     if (packet.checksum != checksumming(packet))
     {
-        printf("Packet is corrupted\n");
+      printf("Packet is corrupted, %d\n", __LINE__);
     }
     else if (packet.seqnum != b_seq)
     {
-        printf("Packet is corrupted\n");
+      printf("Packet is corrupted, %d\n", __LINE__);
     }
     else
     {
