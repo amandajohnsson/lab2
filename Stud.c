@@ -22,7 +22,6 @@ int checksumming(struct pkt packet)
 /* called from layer 5, passed the data to be sent to other side */
 void A_output(struct msg message)
 {
-
     if (message_exist)
     {
         return;
